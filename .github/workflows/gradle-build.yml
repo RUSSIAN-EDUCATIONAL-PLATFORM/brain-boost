@@ -1,27 +1,37 @@
-name: Java CI with Gradle
+name: Kotlin CI
 
+# Настройка событий, при которых будет запускаться рабочий процесс
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ main, dev ] # Запуск при push на ветки main и dev
   pull_request:
-    branches: [ "main" , "dev" ]
-
-permissions:
-  contents: read
+    branches: [ main, dev ] # Запуск при pull request на ветки main и dev
 
 jobs:
   build:
 
+    # Настройка операционной системы для запуска рабочего процесса
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-      with:
-        arguments: build
+      # Проверка кода из репозитория
+      - uses: actions/checkout@v2
+
+      # Установка JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      # Установка разрешений на выполнение Gradle Wrapper
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # Сборка проекта с помощью Gradle
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      # Запуск тестов с помощью Gradle
+      - name: Test with Gradle
+        run: ./gradlew test
